@@ -1,0 +1,52 @@
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+int pin8 = 8;
+int analogpin = A0;
+int sensorValue = 0;
+
+void setup() {
+  pinMode(analogpin, INPUT);
+  pinMode(pin8, OUTPUT);
+  lcd.begin(16, 2); //initialize lcd 
+  delay(500); // Small delay after initializing the LCD
+  lcd.setCursor(0, 0);
+  lcd.print("What is the air");
+  lcd.setCursor(1, 5);
+  lcd.print("quality today?");
+  Serial.begin(9600);
+}
+
+void loop() {
+  delay(1000);
+  sensorValue = analogRead(analogpin);
+  Serial.print("Air quality in PPM = ");
+  Serial.println(sensorValue);
+
+  lcd.setCursor(0, 0);
+  lcd.print("Air Quality: ");
+  lcd.print(sensorValue);
+
+  if (sensorValue <= 500) {
+    Serial.print("fresh Air ");
+    Serial.print("\r\n");
+    lcd.setCursor(0, 1);
+    lcd.print("fresh Air    "); // Print spaces to clear the line
+  } else if (sensorValue > 500 && sensorValue <= 650) {
+    Serial.print("Poor Air ");
+    Serial.print("\r\n");
+    lcd.setCursor(0, 1);
+    lcd.print("Poor Air    "); // Print spaces to clear the line
+  } else if (sensorValue > 650) {
+    Serial.print("Very Poor Air ");
+    Serial.print("\r\n");
+    lcd.setCursor(0, 1);
+    lcd.print("Very Poor Air"); // Print spaces to clear the line
+  }
+
+  // Code for alarm system when it will buzz
+  if (sensorValue > 650) {
+    digitalWrite(pin8, HIGH);
+  } else {
+    digitalWrite(pin8, LOW);
+  }
+}
